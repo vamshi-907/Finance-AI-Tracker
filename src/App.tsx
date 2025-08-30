@@ -8,6 +8,9 @@ import { TransactionProvider } from "./contexts/TransactionContext";
 import LoginPage from "./components/auth/LoginPage";
 import DashboardLayout from "./components/layout/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
+import Transactions from "./pages/Transactions";
+import Analytics from "./pages/Analytics";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -63,10 +66,7 @@ const App = () => (
               <ProtectedRoute>
                 <TransactionProvider>
                   <DashboardLayout>
-                    <div className="text-center py-8">
-                      <h2 className="text-2xl font-bold">Transactions Page</h2>
-                      <p className="text-muted-foreground">Coming soon...</p>
-                    </div>
+                    <Transactions />
                   </DashboardLayout>
                 </TransactionProvider>
               </ProtectedRoute>
@@ -75,10 +75,7 @@ const App = () => (
               <ProtectedRoute>
                 <TransactionProvider>
                   <DashboardLayout>
-                    <div className="text-center py-8">
-                      <h2 className="text-2xl font-bold">Analytics Page</h2>
-                      <p className="text-muted-foreground">Coming soon...</p>
-                    </div>
+                    <Analytics />
                   </DashboardLayout>
                 </TransactionProvider>
               </ProtectedRoute>
@@ -87,10 +84,7 @@ const App = () => (
               <ProtectedRoute>
                 <TransactionProvider>
                   <DashboardLayout>
-                    <div className="text-center py-8">
-                      <h2 className="text-2xl font-bold">Settings Page</h2>
-                      <p className="text-muted-foreground">Coming soon...</p>
-                    </div>
+                    <Settings />
                   </DashboardLayout>
                 </TransactionProvider>
               </ProtectedRoute>
