@@ -44,19 +44,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const storedToken = localStorage.getItem('auth_token');
     if (storedToken) {
       try {
-        const decoded: DecodedToken = jwtDecode(storedToken);
-        
-        // Check if token is expired
-        if (decoded.exp * 1000 > Date.now()) {
+        if (storedToken.includes('demo-signature')) {
+          // Demo token
           setToken(storedToken);
           setUser({
-            id: decoded.sub,
-            email: decoded.email,
-            name: decoded.name,
-            picture: decoded.picture,
+            id: 'demo-user-123',
+            email: 'demo@example.com',
+            name: 'Demo User',
+            picture: 'https://ui-avatars.com/api/?name=Demo+User&background=0071ff&color=fff',
           });
         } else {
-          localStorage.removeItem('auth_token');
+          // Real Google token
+          const decoded: DecodedToken = jwtDecode(storedToken);
+          
+          // Check if token is expired
+          if (decoded.exp * 1000 > Date.now()) {
+            setToken(storedToken);
+            setUser({
+              id: decoded.sub,
+              email: decoded.email,
+              name: decoded.name,
+              picture: decoded.picture,
+            });
+          } else {
+            localStorage.removeItem('auth_token');
+          }
         }
       } catch (error) {
         console.error('Invalid token:', error);
@@ -68,19 +80,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (credential: string) => {
     try {
-      // For now, we'll decode the Google credential directly
-      // In production, you'd send this to your backend for verification
-      const decoded: DecodedToken = jwtDecode(credential);
-      
-      setToken(credential);
-      setUser({
-        id: decoded.sub,
-        email: decoded.email,
-        name: decoded.name,
-        picture: decoded.picture,
-      });
-      
-      localStorage.setItem('auth_token', credential);
+      // Handle both real Google tokens and demo tokens
+      if (credential.includes('demo-signature')) {
+        // Demo token
+        setToken(credential);
+        setUser({
+          id: 'demo-user-123',
+          email: 'demo@example.com',
+          name: 'Demo User',
+          picture: 'https://ui-avatars.com/api/?name=Demo+User&background=0071ff&color=fff',
+        });
+        localStorage.setItem('auth_token', credential);
+      } else {
+        // Real Google credential
+        const decoded: DecodedToken = jwtDecode(credential);
+        
+        setToken(credential);
+        setUser({
+          id: decoded.sub,
+          email: decoded.email,
+          name: decoded.name,
+          picture: decoded.picture,
+        });
+        
+        localStorage.setItem('auth_token', credential);
+      }
     } catch (error) {
       console.error('Login failed:', error);
       throw new Error('Login failed');
@@ -102,7 +126,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <GoogleOAuthProvider clientId="demo-client-id">
+    <GoogleOAuthProvider clientId="1234567890-demo.apps.googleusercontent.com">
       <AuthContext.Provider value={value}>
         {children}
       </AuthContext.Provider>

@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Sparkles, TrendingUp, PieChart, Brain } from 'lucide-react';
 
 export default function LoginPage() {
   const { login } = useAuth();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
   const handleGoogleSuccess = async (credentialResponse: any) => {
@@ -15,6 +17,33 @@ export default function LoginPage() {
       await login(credentialResponse.credential);
     } catch (error) {
       console.error('Login failed:', error);
+      toast({
+        title: "Login Failed",
+        description: "Please try the demo login instead",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDemoLogin = async () => {
+    try {
+      setLoading(true);
+      // Create a mock JWT token for demo purposes
+      const mockToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZW1vLXVzZXItMTIzIiwiZW1haWwiOiJkZW1vQGV4YW1wbGUuY29tIiwibmFtZSI6IkRlbW8gVXNlciIsInBpY3R1cmUiOiJodHRwczovL3VpLWF2YXRhcnMuY29tL2FwaS8/bmFtZT1EZW1vK1VzZXImYmFja2dyb3VuZD0wMDcxZmYmY29sb3I9ZmZmIiwiZXhwIjoxNzU2NjAzMjAwfQ.demo-signature";
+      await login(mockToken);
+      toast({
+        title: "Demo Login Successful",
+        description: "Welcome to Finance AI Tracker!",
+      });
+    } catch (error) {
+      console.error('Demo login failed:', error);
+      toast({
+        title: "Demo Login Failed",
+        description: "Please refresh and try again",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -67,20 +96,39 @@ export default function LoginPage() {
             
             <CardContent className="space-y-6">
               <div className="space-y-4">
-                <GoogleLogin
-                  onSuccess={handleGoogleSuccess}
-                  onError={() => console.error('Login failed')}
-                  size="large"
-                  theme="outline"
-                  text="signin_with"
-                  width="100%"
-                />
+                <div className="w-full">
+                  <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={() => console.error('Login failed')}
+                    size="large"
+                    theme="outline"
+                    text="signin_with"
+                  />
+                </div>
                 
-                {loading && (
-                  <div className="text-center text-muted-foreground">
-                    <div className="shimmer h-2 w-full rounded"></div>
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
                   </div>
-                )}
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-card px-2 text-muted-foreground">Or</span>
+                  </div>
+                </div>
+
+                <Button 
+                  onClick={handleDemoLogin}
+                  disabled={loading}
+                  className="w-full btn-financial"
+                >
+                  {loading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Logging in...
+                    </div>
+                  ) : (
+                    'Try Demo Login'
+                  )}
+                </Button>
               </div>
 
               <div className="text-center space-y-2">
